@@ -21,8 +21,8 @@ Power Automate / Power Apps
           │
           ▼
     ┌─────────────┐
-    │   FastAPI    │
-    │   Backend    │
+    │   FastAPI   │
+    │   Backend   │
     ├─────────────┤
     │ /employees  │ GET, POST
     │ /employees/{id} │ GET, PUT, DELETE
