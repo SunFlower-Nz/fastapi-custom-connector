@@ -1,0 +1,204 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Employee Management API",
+    "description": "API for managing employees and departments. Designed for Power Platform Custom Connector.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Eduardo Tavares",
+      "url": "https://github.com/SunFlower-Nz"
+    }
+  },
+  "host": "your-api-url.azurewebsites.net",
+  "basePath": "/",
+  "schemes": ["https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "X-API-Key"
+    }
+  },
+  "security": [{"api_key": []}],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthCheck",
+        "summary": "Health Check",
+        "description": "Check if the API is running",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "schema": {
+              "$ref": "#/definitions/HealthResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/employees": {
+      "get": {
+        "operationId": "ListEmployees",
+        "summary": "List Employees",
+        "description": "Get paginated list of employees",
+        "parameters": [
+          {"name": "page", "in": "query", "type": "integer", "default": 1},
+          {"name": "page_size", "in": "query", "type": "integer", "default": 20},
+          {"name": "department_id", "in": "query", "type": "integer", "required": false},
+          {"name": "is_active", "in": "query", "type": "boolean", "required": false},
+          {"name": "search", "in": "query", "type": "string", "required": false}
+        ],
+        "responses": {
+          "200": {
+            "description": "List of employees",
+            "schema": {"$ref": "#/definitions/EmployeeListResponse"}
+          }
+        }
+      },
+      "post": {
+        "operationId": "CreateEmployee",
+        "summary": "Create Employee",
+        "description": "Create a new employee",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {"$ref": "#/definitions/EmployeeCreate"}
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Employee created",
+            "schema": {"$ref": "#/definitions/EmployeeResponse"}
+          }
+        }
+      }
+    },
+    "/api/v1/employees/{employee_id}": {
+      "get": {
+        "operationId": "GetEmployee",
+        "summary": "Get Employee",
+        "parameters": [
+          {"name": "employee_id", "in": "path", "required": true, "type": "integer"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee details",
+            "schema": {"$ref": "#/definitions/EmployeeResponse"}
+          }
+        }
+      },
+      "put": {
+        "operationId": "UpdateEmployee",
+        "summary": "Update Employee",
+        "parameters": [
+          {"name": "employee_id", "in": "path", "required": true, "type": "integer"},
+          {"name": "body", "in": "body", "required": true, "schema": {"$ref": "#/definitions/EmployeeUpdate"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Employee updated",
+            "schema": {"$ref": "#/definitions/EmployeeResponse"}
+          }
+        }
+      },
+      "delete": {
+        "operationId": "DeleteEmployee",
+        "summary": "Delete Employee",
+        "parameters": [
+          {"name": "employee_id", "in": "path", "required": true, "type": "integer"}
+        ],
+        "responses": {
+          "204": {"description": "Employee deleted"}
+        }
+      }
+    },
+    "/api/v1/departments": {
+      "get": {
+        "operationId": "ListDepartments",
+        "summary": "List Departments",
+        "responses": {
+          "200": {
+            "description": "List of departments",
+            "schema": {
+              "type": "array",
+              "items": {"$ref": "#/definitions/DepartmentResponse"}
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "HealthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {"type": "string"},
+        "version": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"}
+      }
+    },
+    "EmployeeCreate": {
+      "type": "object",
+      "required": ["first_name", "last_name", "email", "department_id", "position", "salary"],
+      "properties": {
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "department_id": {"type": "integer"},
+        "position": {"type": "string"},
+        "salary": {"type": "number"},
+        "is_active": {"type": "boolean", "default": true}
+      }
+    },
+    "EmployeeUpdate": {
+      "type": "object",
+      "properties": {
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"},
+        "email": {"type": "string", "format": "email"},
+        "department_id": {"type": "integer"},
+        "position": {"type": "string"},
+        "salary": {"type": "number"},
+        "is_active": {"type": "boolean"}
+      }
+    },
+    "EmployeeResponse": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "first_name": {"type": "string"},
+        "last_name": {"type": "string"},
+        "email": {"type": "string"},
+        "department_id": {"type": "integer"},
+        "position": {"type": "string"},
+        "salary": {"type": "number"},
+        "is_active": {"type": "boolean"},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "EmployeeListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {"type": "array", "items": {"$ref": "#/definitions/EmployeeResponse"}},
+        "total": {"type": "integer"},
+        "page": {"type": "integer"},
+        "page_size": {"type": "integer"},
+        "total_pages": {"type": "integer"}
+      }
+    },
+    "DepartmentResponse": {
+      "type": "object",
+      "properties": {
+        "id": {"type": "integer"},
+        "name": {"type": "string"},
+        "code": {"type": "string"},
+        "employee_count": {"type": "integer"}
+      }
+    }
+  }
+}

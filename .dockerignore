@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.db
+.git
+.gitignore
+.env
+custom-connector/
+README.md
+LICENSE
+.vscode/
